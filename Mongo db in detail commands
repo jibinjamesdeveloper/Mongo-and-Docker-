@@ -1,0 +1,166 @@
+Mongo db in detail commands
+---------------------------
+* To Connect to a mongo 
+     -------------
+> mongodb://localhost:27017 -u rootuser -p rootpass   // check your username and password
+
+> show dbs;   // To show all the databases 
+
+> use command to create or switch to db if exists
+
+> use jibinsdb;  // Note : while there is no collection in the db it will not show 
+
+> db.getName(); // will give the current database name
+
+> db.createCollection("hello");  // To create collection 
+
+> db.dropDatabase(); // To drop a database
+
+> db.help(); // will give all the methods available
+
+> show collections // Display all the collections
+
+> db.person.stats(); // To get the details stats.
+
+> db.person.drop() // to drop the collection named person 
+
+> db.createCollection("person", { capped: true, size : 6142800, max: 3000}) // creating a colllections with  
+  constraints
+
+> * Creating documnets inside mongodb 
+-------------------------------------
+
+>  method 1 
+-----------
+
+Just paste the document object inside the terminal 
+
+ --> db.student.insert("student") // insert allows you to insert only one document
+
+> db.student.count() //To get the count of documents in the collection
+
+> db.student.find() // will give all the students from the collection
+
+> db.student.find.pretty() // Will give the student documents in pretty json object fromat 
+
+* To insert many documents 
+
+> db.student.insertMany(students)  // This will take an array of students
+
+> db.student.find().pretty().count(); // To get the count of students
+
+> db.student.find({firstName:"Jibin"}).pretty(); // To use the find 
+
+Query criteria and Projections
+------------------------------
+
+if we want to include fields then use 1 otherwise use 0
+
+> db.student.find({firstName:'Jibin'},{firstName:1,lastName:1,gender:0}).pretty()
+
+   o/p
+   ---
+
+   {
+	"_id" : ObjectId("60c61dc7332c5fefc72c2e30"),
+	"firstName" : "Jibin",
+	"lastName" : "James",
+	"gender" : "M"
+   }
+
+> if we want to exclude fields 
+
+>   db.student.find({firstName:'Jibin'},{firstName:0,lastName:0,gender:0}).pretty()
+
+{
+	"_id" : ObjectId("60c61dc7332c5fefc72c2e30"),
+	"email" : "jibinjames158@gmail.com",
+	"country" : "India",
+	"isStudentActive" : false,
+	"favoriteSubjects" : [
+		"maths",
+		"english",
+		"it"
+	],
+	"totalSpentInBooks" : 0
+}
+
+
+* To update a document / $set
+
+> db.student.update({_id:  ObjectId("60c61dc7332c5fefc72c2e30")},{$set: {firstName: 'Maria'}})
+    
+    o/p
+    ---
+  WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+* Want to update many 
+
+> db.student.updateMany();
+
+> To update document (remove filed) or $unset
+  -------------------------------------------
+
+  --> db.student.update({_id:  ObjectId("60c61dc7332c5fefc72c2e30")},{$unset: {lastName: 1}})
+
+    o/p
+    ---
+    {
+	"_id" : ObjectId("60c61dc7332c5fefc72c2e30"),
+	"firstName" : "Maria",
+	"gender" : "M"
+	}
+   
+
+   Note : In this unset case maria doesnt have the lastName field because we excluded this using unset.
+
+
+   * To find a specific field in projection
+
+   > db.student.find({}, {totalSpentInBooks: 1}).pretty()
+{ "_id" : ObjectId("60c61871332c5fefc72c2e2b"), "totalSpentInBooks" : 0 }
+{ "_id" : ObjectId("60c61dc3332c5fefc72c2e2c"), "totalSpentInBooks" : 0 }
+{ "_id" : ObjectId("60c61dc3332c5fefc72c2e2d"), "totalSpentInBooks" : 10 }
+{ "_id" : ObjectId("60c61dc3332c5fefc72c2e2e"), "totalSpentInBooks" : 100 }
+{ "_id" : ObjectId("60c61dc3332c5fefc72c2e2f"), "totalSpentInBooks" : 0 }
+{ "_id" : ObjectId("60c61dc7332c5fefc72c2e30"), "totalSpentInBooks" : 0 }
+{ "_id" : ObjectId("60c61dc7332c5fefc72c2e31"), "totalSpentInBooks" : 10 }
+{ "_id" : ObjectId("60c61dc7332c5fefc72c2e32"), "totalSpentInBooks" : 100 }
+{ "_id" : ObjectId("60c61dc7332c5fefc72c2e33"), "totalSpentInBooks" : 0 }
+
+
+To incremet the value of totalSpentInBooks by 999 for id = 60c61871332c5fefc72c2e2b
+----------
+> db.student.update({_id:  ObjectId("60c61871332c5fefc72c2e2b")},{$inc: {totalSpentInBooks:999}})
+
+* To remove a favorite subject from the list
+
+> db.student.update({_id:  ObjectId("60c61871332c5fefc72c2e2b")},{$pull: {favoriteSubjects: 'it'}})
+
+* To add back the value in favorite subject 
+
+> db.student.update({_id:  ObjectId("60c61871332c5fefc72c2e2b")},{$push: {favoriteSubjects: 'it'}})
+
+* Delete from Collection
+------------------------
+
+> db.student.deleteOne({_id : ObjectId("60c61871332c5fefc72c2e2b")})
+
+* To delete many ()
+-------------------
+
+> db.student.deleteMany({}) // will delete all the elemets 
+
+> db.student.deleteMany({gender: 'F'}) // deletes all the records where gender = F
+
+
+
+
+
+
+
+
+
+
+
+
